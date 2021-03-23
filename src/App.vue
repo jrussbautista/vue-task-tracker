@@ -1,6 +1,10 @@
 <template>
-  <app-header title="Task Tracker" />
-  <add-task @add-task="addTask" />
+  <app-header
+    title="Task Tracker"
+    :is-open-add-task="isOpenAddTask"
+    @toggle-add-task="toggleAddTask"
+  />
+  <add-task v-if="isOpenAddTask" @add-task="addTask" />
   <task
     v-for="task in tasks"
     :key="task.id"
@@ -11,9 +15,10 @@
 </template>
 
 <script>
-import AppHeader from '@/components/Header.vue';
-import Task from '@/components/Task.vue';
-import AddTask from '@/components/AddTask.vue';
+import AppHeader from "@/components/Header.vue";
+import Task from "@/components/Task.vue";
+import AddTask from "@/components/AddTask.vue";
+import TaskService from "@/services/TaskService";
 
 export default {
   components: {
@@ -23,45 +28,45 @@ export default {
   },
   data() {
     return {
+      isOpenAddTask: false,
       tasks: [],
     };
   },
-
   created() {
-    this.tasks = [
-      {
-        id: '1',
-        text: 'Doctors Appointment',
-        day: 'March 5th at 2:30pm',
-        reminder: true,
-      },
-      {
-        id: '2',
-        text: 'Meeting with boss',
-        day: 'March 6th at 1:30pm',
-        reminder: true,
-      },
-      {
-        id: '3',
-        text: 'Food shopping',
-        day: 'March 7th at 2:00pm',
-        reminder: false,
-      },
-    ];
+    this.getTasks();
   },
   methods: {
-    addTask(task) {
-      const nextId = parseInt(this.tasks[this.tasks.length - 1].id) + 1;
-      const newTask = { ...task, id: nextId };
-      this.tasks = [newTask, ...this.tasks];
+    async getTasks() {
+      try {
+        const { data } = await TaskService.getTasks();
+        this.tasks = data;
+      } catch (error) {
+        console.log(error);
+      }
     },
-    deleteTask(id) {
-      this.tasks = this.tasks.filter((task) => task.id !== id);
+    async addTask(task) {
+      try {
+        const { data } = await TaskService.addTask(task);
+        this.tasks = [...this.tasks, data];
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async deleteTask(id) {
+      try {
+        await TaskService.deleteTask(id);
+        this.tasks = this.tasks.filter((task) => task.id !== id);
+      } catch (error) {
+        console.log(error);
+      }
     },
     toggleReminder(id) {
       this.tasks = this.tasks.map((task) =>
         task.id === id ? { ...task, reminder: !task.reminder } : task
       );
+    },
+    toggleAddTask() {
+      this.isOpenAddTask = !this.isOpenAddTask;
     },
   },
 };

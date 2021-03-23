@@ -1,8 +1,8 @@
 <template>
   <header>
     <h1>{{ title }}</h1>
-    <button type="button">
-      Add Task
+    <button type="button" @click="toggleAddTask">
+      {{ isOpenAddTask ? 'Close' : 'Add Task' }}
     </button>
   </header>
 </template>
@@ -14,6 +14,16 @@ export default {
     title: {
       type: String,
       required: true,
+    },
+    isOpenAddTask: {
+      type: Boolean,
+      required: true,
+    },
+  },
+  emits: ['toggle-add-task'],
+  methods: {
+    toggleAddTask() {
+      this.$emit('toggle-add-task');
     },
   },
 };

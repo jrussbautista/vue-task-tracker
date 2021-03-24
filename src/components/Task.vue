@@ -14,21 +14,22 @@
 
 <script>
 export default {
-  name: 'Task',
+  name: "Task",
   props: {
     task: {
       type: Object,
       required: true,
     },
   },
-  emits: ['delete-task', 'toggle-reminder'],
   methods: {
-    onDelete(id) {
-      this.$emit('delete-task', id);
+    async onDelete(id) {
+      try {
+        await this.$store.dispatch("task/deleteTask", id);
+      } catch (error) {
+        console.log(error);
+      }
     },
-    toggleReminder(id) {
-      this.$emit('toggle-reminder', id);
-    },
+    toggleReminder(id) {},
   },
 };
 </script>

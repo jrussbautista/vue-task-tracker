@@ -1,5 +1,5 @@
 <template>
-  <form @submit="onSubmit">
+  <form @submit.prevent="onSubmit">
     <div>
       <input
         type="text"
@@ -20,24 +20,21 @@
 
 <script>
 export default {
-  name: 'AddTask',
-  emits: ['add-task'],
+  name: "AddTask",
   data() {
     return {
       task: {
-        text: '',
-        day: '',
+        text: "",
+        day: "",
         reminder: false,
       },
     };
   },
   methods: {
-    onSubmit(e) {
-      e.preventDefault();
-
-      this.$emit('add-task', this.task);
-
-      this.task = { text: '', day: '', reminder: false };
+    onSubmit() {
+      this.$store.dispatch("task/addTask", this.task).then((res) => {
+        this.task = { text: "", day: "", reminder: false };
+      });
     },
   },
 };
